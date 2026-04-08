@@ -1,6 +1,7 @@
-groq
-streamlit
-python-dotenv
-Pillow
-matplotlib
-numpy
+groq>=0.12.0
+streamlit>=1.40.0
+python-dotenv>=1.0.0
+Pillow>=10.4.0
+matplotlib>=3.9.0
+numpy>=1.26.0
+simpleeval>=1.0.0
