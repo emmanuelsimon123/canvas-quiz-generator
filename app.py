@@ -5,6 +5,7 @@ from graph_generator import generate_graph
 from PIL import Image
 import os
 import tempfile
+import base64
 
 st.set_page_config(page_title="Canvas Quiz Generator", page_icon="📝", layout="centered")
 
@@ -98,7 +99,8 @@ if uploaded_files:
 
         for file in uploaded_files:
             with st.spinner(f"Reading {file.name}..."):
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+                suffix = os.path.splitext(file.name)[1] or ".jpg"
+                with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
                     tmp.write(file.getvalue())
                     tmp_path = tmp.name
 
@@ -145,7 +147,6 @@ if uploaded_files:
 
                     # Show graph if exists
                     if i in graph_images:
-                        import base64
                         graph_bytes = base64.b64decode(graph_images[i])
                         st.image(graph_bytes, caption="Graph shown to students")
 

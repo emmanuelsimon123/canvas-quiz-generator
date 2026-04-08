@@ -6,7 +6,10 @@ import base64
 import re
 
 load_dotenv()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise ValueError("GROQ_API_KEY not set. Create a .env file with your Groq API key.")
+client = Groq(api_key=api_key)
 
 def clean_math(text):
     if not isinstance(text, str):
@@ -184,6 +187,9 @@ Rules:
     if text.endswith("```"):
         text = text[:-3]
 
-    result = json.loads(text.strip())
+    try:
+        result = json.loads(text.strip())
+    except json.JSONDecodeError as e:
+        raise ValueError(f"The AI returned invalid JSON. Try again. Raw response:\n{text[:500]}") from e
     result = apply_math_cleaning(result)
     return result

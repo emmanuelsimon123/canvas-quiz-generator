@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import io
 import base64
+import types
+from simpleeval import SimpleEval
 
 def generate_graph(graph_data):
     fig, ax = plt.subplots(1, 1, figsize=(6, 4), dpi=150)
@@ -19,19 +21,27 @@ def generate_graph(graph_data):
 
     colors = ['#2196F3', '#F44336', '#4CAF50', '#FF9800', '#9C27B0']
 
-    safe_dict = {
-        "x": x, "np": np,
+    _np = types.SimpleNamespace(
+        sin=np.sin, cos=np.cos, tan=np.tan,
+        sqrt=np.sqrt, abs=np.abs, log=np.log,
+        log10=np.log10, exp=np.exp, pi=np.pi, e=np.e,
+    )
+    safe_names = {
+        "x": x,
         "sin": np.sin, "cos": np.cos, "tan": np.tan,
         "sqrt": np.sqrt, "abs": np.abs, "log": np.log,
         "log10": np.log10, "exp": np.exp, "pi": np.pi,
-        "e": np.e
+        "e": np.e,
+        "np": _np,
     }
 
     equation_plotted = False
 
     for i, eq in enumerate(equations):
         try:
-            y = eval(eq, {"__builtins__": {}}, safe_dict)
+            evaluator = SimpleEval()
+            evaluator.names = safe_names
+            y = evaluator.eval(eq)
 
             if not hasattr(y, '__len__'):
                 y = np.full_like(x, y)
